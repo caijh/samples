@@ -12,7 +12,9 @@
     <modules>
         <module>sample-design-pattern</module>
         <module>sample-activemq</module>
+        <module>sample-socket</module>
     </modules>
+
     <properties>
         <maven_checkstyle_version>3.0.0</maven_checkstyle_version>
     </properties>
@@ -58,5 +60,17 @@
             </build>
         </profile>
     </profiles>
+
+    <build>
+        <plugins>
+            <plugin>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <configuration>
+                    <source>1.8</source>
+                    <target>1.8</target>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
 
 </project>
