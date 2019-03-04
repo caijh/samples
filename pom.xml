@@ -13,6 +13,7 @@
         <module>sample-design-pattern</module>
         <module>sample-activemq</module>
         <module>sample-socket</module>
+        <module>sample-netty</module>
     </modules>
 
     <properties>
