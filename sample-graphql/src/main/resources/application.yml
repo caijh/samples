@@ -1,0 +1,21 @@
+spring:
+  application:
+    name: graphsql-test
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://127.0.0.1:3306/graphql_test
+    username: root
+    password: 123456
+
+
+mybatis:
+  configuration:
+    aggressive-lazy-loading: true
+    auto-mapping-unknown-column-behavior: none
+    cache-enabled: true
+    lazy-loading-enabled: true
+    use-column-label: true
+    map-underscore-to-camel-case: true
+    use-actual-param-name: true
+  mapper-locations: classpath*:mapper/**/*.xml
+  type-aliases-package: com.coding.sample.graphql.entity

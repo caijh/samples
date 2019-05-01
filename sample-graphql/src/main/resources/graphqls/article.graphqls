@@ -1,0 +1,10 @@
+extend type Query {
+    findArticleById(id: Int) : Article
+}
+
+type Article {
+    id: ID
+    title: String
+    content: String
+    authorId: Int
+}
