@@ -2,6 +2,10 @@ extend type Query {
     findArticleById(id: Int) : Article
 }
 
+extend type Mutation {
+    newArticle(title: String, content: String, authorId: Int): Boolean
+}
+
 type Article {
     id: ID
     title: String
