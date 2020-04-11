@@ -1,4 +1,4 @@
-package com.coding.sample.design_pattern.factory_method;
+package com.coding.sample.design_pattern.factory;
 
 public interface ProductFactory {
 

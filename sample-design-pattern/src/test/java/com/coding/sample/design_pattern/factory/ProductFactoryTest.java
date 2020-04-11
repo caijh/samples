@@ -1,5 +1,6 @@
-package com.coding.sample.design_pattern.factory_method;
+package com.coding.sample.design_pattern.factory;
 
+import org.junit.Assert;
 import org.junit.Test;
 
 public class ProductFactoryTest {
@@ -9,8 +10,8 @@ public class ProductFactoryTest {
         ProductFactory productFactory = new ConcreteProductFactory();
         Product productA = productFactory.create(ConcreteProductA.class);
         Product productB = productFactory.create(ConcreteProductB.class);
-        System.out.println(productA.getClass());
-        System.out.println(productB.getClass());
+        Assert.assertTrue(ConcreteProductA.class.isAssignableFrom(productA.getClass()));
+        Assert.assertTrue(ConcreteProductB.class.isAssignableFrom(productB.getClass()));
     }
 
 }
