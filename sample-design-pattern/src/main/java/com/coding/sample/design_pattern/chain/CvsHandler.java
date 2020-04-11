@@ -1,8 +1,8 @@
 package com.coding.sample.design_pattern.chain;
 
-public class TextHandler implements Handler {
+public class CvsHandler implements Handler {
 
-    private Handler next;
+    private Handler nextHandler;
 
     @Override
     public String handlerName() {
@@ -11,15 +11,15 @@ public class TextHandler implements Handler {
 
     @Override
     public void setNextHandler(Handler handler) {
-        this.next = handler;
+        this.nextHandler = handler;
     }
 
     @Override
     public void process(File file) {
-        if (file.getFileType().equals("txt")) {
-            // do some thing
-        } else if (next != null) {
-            next.process(file);
+        if ("cvs".equals(file.getFileType())) {
+            // process cvs
+        } else {
+            nextHandler.process(file);
         }
     }
 
