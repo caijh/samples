@@ -1,5 +1,8 @@
 package com.coding.sample.design_pattern.command;
 
+/**
+ * triggers the command.
+ */
 public class Invoker {
 
     private Command command;
