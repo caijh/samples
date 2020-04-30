@@ -18,10 +18,6 @@ spec:
     metadata:
       labels:
         app: sample-prometheus
-      annotations:
-        prometheus.io/scrape: "true"
-        prometheus.io/path: "/actuator/prometheus"
-        prometheus.io/port: "8080"
     spec:
       containers:
         - name: sample-prometheus
@@ -48,6 +44,10 @@ metadata:
   name: sample-prometheus
   labels:
     app: sample-prometheus
+  annotations:
+    prometheus.io/scrape: "true"
+    prometheus.io/path: "/actuator/prometheus"
+    prometheus.io/port: "8080"
 spec:
   ports:
     - port: 8080
