@@ -40,3 +40,18 @@ spec:
               port: 8080
               path: /actuator/health
             initialDelaySeconds: 10
+
+---
+kind: Service
+apiVersion: v1
+metadata:
+  name: sample-prometheus
+  labels:
+    app: sample-prometheus
+spec:
+  ports:
+    - port: 8080
+      targetPort: 8080
+      protocol: TCP
+  selector:
+    app: sample-prometheus
