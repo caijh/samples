@@ -4,20 +4,21 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import com.github.caijh.sample.drools.model.Message;
 import org.kie.api.KieServices;
-import org.kie.api.logger.KieRuntimeLogger;
 import org.kie.api.runtime.KieContainer;
 import org.kie.api.runtime.KieSession;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class HelloApp {
 
+    private static final Logger LOGGER = LoggerFactory.getLogger(HelloApp.class);
+
     public static void main(String[] args) {
         KieContainer kContainer = null;
-        KieRuntimeLogger logger = null;
         try {
             KieServices ks = KieServices.Factory.get();
             kContainer = ks.getKieClasspathContainer();
             KieSession kSession = kContainer.newKieSession("ksession-hello");
-            logger = ks.getLoggers().newFileLogger(kSession, "./helloworld");
 
             Message message1 = new Message(Message.MessageType.HI, "杨过");
             kSession.insert(message1);
@@ -42,11 +43,8 @@ public class HelloApp {
             kSession.fireAllRules();
 
         } catch (Exception e) {
-            e.printStackTrace();
+            LOGGER.error("error:", e);
         } finally {
-            if (logger != null) {
-                logger.close();
-            }
             if (kContainer != null) {
                 kContainer.dispose();
             }

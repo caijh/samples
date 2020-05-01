@@ -8,6 +8,7 @@ import lombok.Setter;
 @Setter
 @AllArgsConstructor
 public class Message {
+
     private MessageType messageType;
     private String target;
 
@@ -16,4 +17,5 @@ public class Message {
         GOODBYE,
         CHAT
     }
+
 }
