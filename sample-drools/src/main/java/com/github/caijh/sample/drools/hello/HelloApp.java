@@ -1,8 +1,8 @@
-package com.github.caijh.sample.drools;
+package com.github.caijh.sample.drools.hello;
 
 import java.util.concurrent.atomic.AtomicInteger;
 
-import com.github.caijh.sample.drools.model.Message;
+import com.github.caijh.sample.drools.hello.model.Message;
 import org.kie.api.KieServices;
 import org.kie.api.runtime.KieContainer;
 import org.kie.api.runtime.KieSession;

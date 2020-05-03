@@ -1,4 +1,4 @@
-package com.github.caijh.sample.drools.model;
+package com.github.caijh.sample.drools.hello.model;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

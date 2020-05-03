@@ -1,0 +1,48 @@
+package bank;
+import com.github.caijh.sample.drools.bank.model.*;
+import com.github.caijh.sample.drools.bank.service.*;
+
+import function com.github.caijh.sample.drools.bank.service.ValidationHelper.error;
+import function com.github.caijh.sample.drools.bank.service.ValidationHelper.warning;
+import function com.github.caijh.sample.drools.bank.service.ValidationHelper.yearsPassedSince;
+
+global ValidationReport validationReport;
+global ReportFactory reportFactory;
+global BankingInquiryService inquiryService;
+
+
+rule "addressRequired"
+    when
+        Customer( address == null )
+    then
+        warning(kcontext );
+end
+
+rule "phoneNumberRequired"
+    when
+        Customer( phoneNumber == null || == "" )
+    then
+        error(kcontext );
+end
+
+rule "accountOwnerRequired"
+    when
+        $account : Account( owner == null )
+    then
+    error(kcontext, $account);
+end
+
+rule "accountBalanceAtLeast"
+    when
+        $account : Account( balance < 100 )
+    then
+        warning(kcontext, $account);
+end
+
+rule "studentAccountCustomerAgeLessThan"
+when
+    $customer: Customer( yearsPassedSince(birthDay) >= 27 )
+    $account : Account( type == Account.Type.STUDENT && owner== $customer)
+then
+    error(kcontext, $account);
+end
