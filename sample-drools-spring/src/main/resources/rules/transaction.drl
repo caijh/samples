@@ -1,0 +1,36 @@
+package rules;
+
+import com.github.caijh.sample.drools.model.Transaction;
+import com.github.caijh.sample.drools.service.TransactionService;
+
+global TransactionService transactionService;
+
+//函数示例
+function void print(String messgae){
+    System.out.println(messgae);
+}
+
+
+rule "amount<0"
+when
+    Transaction(amount < 0)
+then
+    print("amount < 0");
+end
+
+rule "balance<amount"
+    when
+        Transaction(fromAccount.balance <  amount)
+    then
+        print("balance < amount");
+end
+
+rule "balance>=amount"
+    when
+        $t: Transaction(fromAccount.balance >=  amount)
+    then
+        transactionService.updateTransaction($t);
+end
+
+
+
