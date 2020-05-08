@@ -1,4 +1,4 @@
-package hello;
+package rules.hello;
 import java.util.concurrent.atomic.AtomicInteger;
 import com.github.caijh.sample.drools.hello.model.Message
 
@@ -54,10 +54,10 @@ rule "give-me-rice"
 //本规则的效果：如果target="loop"，会循环触发，真到10次后停下
 rule "loop"
 //    no-loop  //加上这行后，将禁止循环触发
-    when
-        $message: Message(target !=null && target.equals("loop") && count.get()<10)
-    then
-        print("\n我会每隔1秒触发，10次后停止！" + count.addAndGet(1));
-        Thread.sleep(1000);
-        update($message)
-    end
+when
+    $message: Message(target !=null && target.equals("loop") && count.get()<10)
+then
+    print("\n我会每隔1秒触发，10次后停止！" + count.addAndGet(1));
+    Thread.sleep(1000);
+    update($message)
+end
