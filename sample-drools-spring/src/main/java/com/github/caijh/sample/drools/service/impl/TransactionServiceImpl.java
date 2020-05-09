@@ -10,7 +10,6 @@ import com.github.caijh.sample.drools.model.Transaction;
 import com.github.caijh.sample.drools.repository.AccountRepository;
 import com.github.caijh.sample.drools.repository.TransactionRepository;
 import com.github.caijh.sample.drools.service.TransactionService;
-import org.drools.core.impl.InternalKnowledgeBase;
 import org.kie.api.runtime.KieSession;
 import org.springframework.stereotype.Service;
 
@@ -22,7 +21,7 @@ public class TransactionServiceImpl implements TransactionService {
     @Inject
     private TransactionRepository transactionRepository;
     @Inject
-    private InternalKnowledgeBase knowledgeBase;
+    KieSession session;
 
     @Override
     public void doTran(long fromAccountId, long toAccountId, BigDecimal amount) {
@@ -36,7 +35,6 @@ public class TransactionServiceImpl implements TransactionService {
         transaction.setStatus("Doing");
         transaction.setDate(new Date());
         transaction.setDescription("amount: " + amount + " from " + from.getId() + " to " + to.getId());
-        KieSession session = knowledgeBase.newKieSession();
         session.setGlobal("transactionService", this);
         session.insert(transaction);
         session.fireAllRules();
@@ -51,7 +49,7 @@ public class TransactionServiceImpl implements TransactionService {
         accountRepository.save(fromAccount);
         accountRepository.save(toAccount);
         transactionRepository.save(transaction);
-        return false;
+        return true;
     }
 
 }

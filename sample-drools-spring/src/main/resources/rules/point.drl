@@ -1,0 +1,13 @@
+package rules;
+
+import com.github.caijh.sample.drools.model.SoePoint;
+import java.util.List;
+
+global List<SoePoint> points;
+
+rule "MI&&quality=1"
+    when
+        $point : SoePoint( type == "MI" && quality == 1 )
+    then
+        points.add($point);
+end
