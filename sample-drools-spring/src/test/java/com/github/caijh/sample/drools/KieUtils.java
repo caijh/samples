@@ -50,7 +50,7 @@ public class KieUtils {
 
     private Resource[] getRuleFiles() throws IOException {
         ResourcePatternResolver resourcePatternResolver = new PathMatchingResourcePatternResolver();
-        return resourcePatternResolver.getResources("classpath*:" + RULES_PATH + "**/*.drl");
+        return resourcePatternResolver.getResources("classpath*:" + RULES_PATH + "**/*");
     }
 
 }

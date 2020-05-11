@@ -2,10 +2,11 @@ package rules;
 
 import com.github.caijh.sample.drools.model.Account;
 
-rule 'test-dsl'
-expander account.dsl
+expander dsl/account.dsl
+
+rule "test-dsl"
 when
-    账号
+    There is a Account
 then
-    print
+    echo
 end
