@@ -11,3 +11,7 @@ rule "MI&&quality=1"
     then
         points.add($point);
 end
+
+query "query type=MI and quality==1"
+    $point : SoePoint( type == "MI" && quality == 1 )
+end

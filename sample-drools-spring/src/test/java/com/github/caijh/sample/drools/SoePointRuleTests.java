@@ -6,16 +6,10 @@ import java.util.List;
 
 import com.github.caijh.sample.drools.model.SoePoint;
 import org.junit.jupiter.api.Test;
-import org.kie.api.KieServices;
-import org.kie.api.builder.KieBuilder;
-import org.kie.api.builder.KieFileSystem;
-import org.kie.api.builder.KieRepository;
 import org.kie.api.runtime.KieContainer;
 import org.kie.api.runtime.KieSession;
-import org.kie.internal.io.ResourceFactory;
-import org.springframework.core.io.Resource;
-import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
-import org.springframework.core.io.support.ResourcePatternResolver;
+import org.kie.api.runtime.rule.QueryResults;
+import org.kie.api.runtime.rule.QueryResultsRow;
 import org.springframework.util.Assert;
 
 public class SoePointRuleTests {
@@ -55,7 +49,7 @@ public class SoePointRuleTests {
 
         List<SoePoint> points = new ArrayList<>();
 
-        KieContainer kieContainer = kieContainer();
+        KieContainer kieContainer = KieUtils.getInstance().kieContainer();
         KieSession kieSession = kieContainer.newKieSession();
         kieSession.insert(point1);
         kieSession.insert(point2);
@@ -66,35 +60,14 @@ public class SoePointRuleTests {
         kieSession.dispose();
         Assert.notEmpty(points, "");
 
-    }
-
-    private KieServices getKieServices() {
-        return KieServices.Factory.get();
-    }
-
-
-    public KieContainer kieContainer() throws IOException {
-        final KieRepository kieRepository = getKieServices().getRepository();
-
-        kieRepository.addKieModule(kieRepository::getDefaultReleaseId);
-
-        KieBuilder kieBuilder = getKieServices().newKieBuilder(kieFileSystem());
-        kieBuilder.buildAll();
-
-        return getKieServices().newKieContainer(kieRepository.getDefaultReleaseId());
-    }
-
-    public KieFileSystem kieFileSystem() throws IOException {
-        KieFileSystem kieFileSystem = getKieServices().newKieFileSystem();
-        for (Resource file : getRuleFiles()) {
-            kieFileSystem.write(ResourceFactory.newClassPathResource(RULES_PATH + file.getFilename(), "UTF-8"));
+        QueryResults results = kieSession.getQueryResults("query type=MI and quality==1");
+        System.out.println("results size is " + results.size());
+        for (QueryResultsRow row : results) {
+            SoePoint point = (SoePoint) row.get("$point");
+            System.out.println("SoePoint " + point.getPointId());
         }
-        return kieFileSystem;
+        Assert.isTrue(points.size() == results.size(), "");
     }
 
-    private Resource[] getRuleFiles() throws IOException {
-        ResourcePatternResolver resourcePatternResolver = new PathMatchingResourcePatternResolver();
-        return resourcePatternResolver.getResources("classpath*:" + RULES_PATH + "**/*.*");
-    }
 
 }
