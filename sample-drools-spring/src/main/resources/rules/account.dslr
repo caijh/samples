@@ -6,7 +6,7 @@ expander dsl/account.dsl
 
 rule "test-dsl"
 when
-    There is a Account
+    当账号名称是test
 then
     echo
 end

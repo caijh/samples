@@ -19,7 +19,7 @@ public class AccountTests {
         InternalKnowledgeBase knowledgeBase = createKnowledgeBaseFromDSL();
         KieSession kieSession = knowledgeBase.newKieSession();
         Account account = new Account();
-        account.setName("caijh");
+        account.setName("test");
         account.setBalance(BigDecimal.valueOf(2000));
         kieSession.insert(account);
         kieSession.fireAllRules();
