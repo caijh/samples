@@ -3,6 +3,7 @@ package com.github.caijh.sample.drools;
 import java.io.FileNotFoundException;
 
 import com.github.caijh.sample.drools.model.Order;
+import org.drools.core.builder.conf.impl.DecisionTableConfigurationImpl;
 import org.drools.core.impl.InternalKnowledgeBase;
 import org.drools.core.impl.KnowledgeBaseFactory;
 import org.drools.decisiontable.InputType;
@@ -22,31 +23,31 @@ public class DecisionTableTests {
         KieSession kieSession = knowledgeBase.newKieSession();
         Order order = new Order();
         order.setTotalPrice(200D);
-        order.setItemsCount(1);
+        order.setItemCount(1);
         order.setDeliverInDays(1);
         kieSession.insert(order);
 
         order = new Order();
         order.setTotalPrice(200D);
-        order.setItemsCount(1);
+        order.setItemCount(1);
         order.setDeliverInDays(2);
         kieSession.insert(order);
 
         order = new Order();
         order.setTotalPrice(200D);
-        order.setItemsCount(4);
+        order.setItemCount(4);
         order.setDeliverInDays(1);
         kieSession.insert(order);
 
         order = new Order();
         order.setTotalPrice(200D);
-        order.setItemsCount(4);
+        order.setItemCount(4);
         order.setDeliverInDays(2);
         kieSession.insert(order);
 
         order = new Order();
         order.setTotalPrice(200D);
-        order.setItemsCount(4);
+        order.setItemCount(4);
         kieSession.insert(order);
 
         kieSession.fireAllRules();
@@ -61,9 +62,10 @@ public class DecisionTableTests {
         System.out.println(drl);
     }
 
-    private InternalKnowledgeBase createKnowledgeBaseFromDecisionTable() throws Exception {
+    private InternalKnowledgeBase createKnowledgeBaseFromDecisionTable() {
         KnowledgeBuilder builder = KnowledgeBuilderFactory.newKnowledgeBuilder();
-        builder.add(ResourceFactory.newClassPathResource("rules/table/decision.xlsx"), ResourceType.DTABLE);
+        builder.add(ResourceFactory
+            .newClassPathResource("rules/table/decision.xlsx"), ResourceType.DTABLE, new DecisionTableConfigurationImpl());
         if (builder.hasErrors()) {
             throw new RuntimeException(builder.getErrors().toString());
         }
