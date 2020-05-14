@@ -1,0 +1,11 @@
+server:
+  port: 8081
+
+spring:
+  application:
+    name: sample-zookeeper
+
+  cloud:
+    zookeeper:
+      enabled: true
+      connect-string: localhost:2181
