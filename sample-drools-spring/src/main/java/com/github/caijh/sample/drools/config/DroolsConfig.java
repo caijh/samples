@@ -1,6 +1,8 @@
 package com.github.caijh.sample.drools.config;
 
 import java.io.IOException;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 
 import org.kie.api.KieBase;
 import org.kie.api.KieServices;
@@ -14,6 +16,7 @@ import org.kie.spring.KModuleBeanFactoryPostProcessor;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
 import org.springframework.core.io.support.ResourcePatternResolver;
@@ -27,8 +30,12 @@ public class DroolsConfig {
     @ConditionalOnMissingBean(KieFileSystem.class)
     public KieFileSystem kieFileSystem() throws IOException {
         KieFileSystem kieFileSystem = getKieServices().newKieFileSystem();
+        ClassPathResource ruleResource = new ClassPathResource(RULES_PATH);
+        Path rulePath = Paths.get(ruleResource.getURI());
         for (Resource file : getRuleFiles()) {
-            kieFileSystem.write(ResourceFactory.newClassPathResource(RULES_PATH + file.getFilename(), "UTF-8"));
+            Path path = Paths.get(file.getURI());
+            kieFileSystem.write(ResourceFactory
+                .newClassPathResource(RULES_PATH + rulePath.relativize(path).toString(), "UTF-8"));
         }
         return kieFileSystem;
     }

@@ -2,7 +2,7 @@ package rules;
 
 import com.github.caijh.sample.drools.model.Account;
 
-expander dsl/account.dsl
+expander account.dsl
 
 rule "test-dsl"
 when

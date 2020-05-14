@@ -14,8 +14,6 @@ import org.springframework.util.Assert;
 
 public class SoePointRuleTests {
 
-    private static final String RULES_PATH = "rules/";
-
     @Test
     public void test() throws IOException {
         SoePoint point1 = new SoePoint();
