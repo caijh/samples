@@ -12,3 +12,8 @@ spring:
   jpa:
     hibernate:
       ddl-auto: update
+  cloud:
+    zookeeper:
+      enabled: true
+      connect-string: localhost:2181
+
