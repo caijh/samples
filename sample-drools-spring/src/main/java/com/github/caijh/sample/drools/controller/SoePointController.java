@@ -38,7 +38,6 @@ public class SoePointController {
         List<SoePoint> filterPoints = new ArrayList<>();
         kieSession.setGlobal("points", filterPoints);
         kieSession.fireAllRules();
-        filterPoints.forEach(e -> System.out.println(e.toString()));
         kieSession.dispose();
     }
 
