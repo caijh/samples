@@ -1,6 +1,5 @@
 package com.github.caijh.sample.drools.config;
 
-import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
@@ -8,10 +7,12 @@ import org.apache.curator.framework.CuratorFramework;
 import org.apache.curator.framework.recipes.cache.TreeCache;
 import org.apache.curator.framework.recipes.cache.TreeCacheListener;
 import org.apache.zookeeper.data.Stat;
+import org.drools.compiler.kie.builder.impl.MemoryKieModule;
 import org.kie.api.KieBase;
 import org.kie.api.KieServices;
 import org.kie.api.builder.KieBuilder;
 import org.kie.api.builder.KieFileSystem;
+import org.kie.api.builder.KieModule;
 import org.kie.api.builder.KieRepository;
 import org.kie.api.runtime.KieContainer;
 import org.kie.api.runtime.KieSession;
@@ -32,7 +33,6 @@ import org.springframework.core.env.Environment;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
-import org.springframework.core.io.support.ResourcePatternResolver;
 
 @Configuration
 @AutoConfigureAfter({ZookeeperAutoConfiguration.class})
@@ -66,9 +66,10 @@ public class DroolsConfig implements EnvironmentAware, ApplicationContextAware {
             loadRulesFromZK(kieFileSystem);
         } else {
             LOG.info("load rule from local");
-            ClassPathResource ruleResource = new ClassPathResource(RULES_PATH);
-            Path rulePath = Paths.get(ruleResource.getURI());
-            for (Resource file : getRuleFiles()) {
+            Path rulePath = Paths.get(new ClassPathResource(RULES_PATH).getURI());
+            Resource[] resources = new PathMatchingResourcePatternResolver()
+                .getResources("classpath*:" + RULES_PATH + "**/*.*");
+            for (Resource file : resources) {
                 Path path = Paths.get(file.getURI());
                 kieFileSystem.write(ResourceFactory
                     .newClassPathResource(RULES_PATH + rulePath.relativize(path).toString(), "UTF-8"));
@@ -82,17 +83,14 @@ public class DroolsConfig implements EnvironmentAware, ApplicationContextAware {
         return KieServices.Factory.get();
     }
 
-    private Resource[] getRuleFiles() throws IOException {
-        ResourcePatternResolver resourcePatternResolver = new PathMatchingResourcePatternResolver();
-        return resourcePatternResolver.getResources("classpath*:" + RULES_PATH + "**/*.*");
-    }
-
     @Bean
     @ConditionalOnMissingBean(KieContainer.class)
     public KieContainer kieContainer() throws Exception {
         final KieRepository kieRepository = getKieServices().getRepository();
 
-        kieRepository.addKieModule(kieRepository::getDefaultReleaseId);
+        KieModule kieModule = new MemoryKieModule(kieRepository.getDefaultReleaseId());
+
+        kieRepository.addKieModule(kieModule);
 
         kieBuilder = getKieServices().newKieBuilder(kieFileSystem());
         kieBuilder.buildAll();

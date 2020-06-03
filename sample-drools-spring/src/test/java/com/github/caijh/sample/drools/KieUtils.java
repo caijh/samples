@@ -4,9 +4,11 @@ import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
+import org.drools.compiler.kie.builder.impl.MemoryKieModule;
 import org.kie.api.KieServices;
 import org.kie.api.builder.KieBuilder;
 import org.kie.api.builder.KieFileSystem;
+import org.kie.api.builder.KieModule;
 import org.kie.api.builder.KieRepository;
 import org.kie.api.runtime.KieContainer;
 import org.kie.internal.io.ResourceFactory;
@@ -35,7 +37,9 @@ public class KieUtils {
     public KieContainer kieContainer() throws IOException {
         final KieRepository kieRepository = getKieServices().getRepository();
 
-        kieRepository.addKieModule(kieRepository::getDefaultReleaseId);
+        KieModule kieModule = new MemoryKieModule(kieRepository.getDefaultReleaseId());
+
+        kieRepository.addKieModule(kieModule);
 
         KieBuilder kieBuilder = getKieServices().newKieBuilder(kieFileSystem());
         kieBuilder.buildAll();
