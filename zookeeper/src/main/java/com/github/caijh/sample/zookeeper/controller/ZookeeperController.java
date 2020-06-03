@@ -10,8 +10,10 @@ import org.apache.zookeeper.data.Stat;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
 @RestController
 public class ZookeeperController {
@@ -74,5 +76,15 @@ public class ZookeeperController {
         return Lists.newArrayList();
     }
 
+    @PostMapping(value = "/setData")
+    public String setData(@RequestParam String path, @RequestParam MultipartFile file) throws Exception {
+        Stat stat = client.checkExists().forPath(path);
+        if (stat == null) {
+            client.create().forPath(path, file.getBytes());
+        } else {
+            client.setData().forPath(path, file.getBytes());
+        }
+        return "success";
+    }
 
 }
