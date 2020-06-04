@@ -48,12 +48,6 @@ public class DroolsConfig implements EnvironmentAware, ApplicationContextAware, 
 
     private ApplicationContext applicationContext;
 
-    private KieBuilder kieBuilder;
-
-    private CuratorFramework client;
-
-    private volatile boolean init = false;
-
 
     @Bean
     @ConditionalOnMissingBean(KieFileSystem.class)
@@ -90,7 +84,7 @@ public class DroolsConfig implements EnvironmentAware, ApplicationContextAware, 
 
         kieRepository.addKieModule(kieModule);
 
-        kieBuilder = getKieServices().newKieBuilder(kieFileSystem());
+        KieBuilder kieBuilder = getKieServices().newKieBuilder(kieFileSystem());
         kieBuilder.buildAll();
         if (kieBuilder.getResults().hasMessages(Message.Level.ERROR)) {
             throw new RuntimeException("Build Errors:\n" + kieBuilder.getResults().toString());
@@ -100,7 +94,7 @@ public class DroolsConfig implements EnvironmentAware, ApplicationContextAware, 
     }
 
     private void loadRulesFromZK(KieFileSystem kieFileSystem) throws Exception {
-        client = applicationContext.getBean(CuratorFramework.class);
+        CuratorFramework client = applicationContext.getBean(CuratorFramework.class);
         Stat stat = client.checkExists().forPath(ZK_PREFIX_NODE_PATH);
         if (stat == null) {
             client.create().forPath(ZK_PREFIX_NODE_PATH);
