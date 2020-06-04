@@ -3,24 +3,24 @@ package com.github.caijh.sample.drools.config;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
+import com.github.caijh.sample.drools.util.KieUtils;
 import org.apache.curator.framework.CuratorFramework;
 import org.apache.curator.framework.recipes.cache.TreeCache;
 import org.apache.curator.framework.recipes.cache.TreeCacheListener;
 import org.apache.zookeeper.data.Stat;
 import org.drools.compiler.kie.builder.impl.MemoryKieModule;
-import org.kie.api.KieBase;
 import org.kie.api.KieServices;
 import org.kie.api.builder.KieBuilder;
 import org.kie.api.builder.KieFileSystem;
 import org.kie.api.builder.KieModule;
 import org.kie.api.builder.KieRepository;
+import org.kie.api.builder.Message;
 import org.kie.api.runtime.KieContainer;
-import org.kie.api.runtime.KieSession;
 import org.kie.internal.io.ResourceFactory;
-import org.kie.spring.KModuleBeanFactoryPostProcessor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeansException;
+import org.springframework.beans.factory.InitializingBean;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.cloud.zookeeper.ZookeeperAutoConfiguration;
@@ -36,7 +36,7 @@ import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
 
 @Configuration
 @AutoConfigureAfter({ZookeeperAutoConfiguration.class})
-public class DroolsConfig implements EnvironmentAware, ApplicationContextAware {
+public class DroolsConfig implements EnvironmentAware, ApplicationContextAware, InitializingBean {
 
     private static final Logger LOG = LoggerFactory.getLogger(DroolsConfig.class);
 
@@ -83,9 +83,7 @@ public class DroolsConfig implements EnvironmentAware, ApplicationContextAware {
         return KieServices.Factory.get();
     }
 
-    @Bean
-    @ConditionalOnMissingBean(KieContainer.class)
-    public KieContainer kieContainer() throws Exception {
+    private KieContainer kieContainer() throws Exception {
         final KieRepository kieRepository = getKieServices().getRepository();
 
         KieModule kieModule = new MemoryKieModule(kieRepository.getDefaultReleaseId());
@@ -94,28 +92,11 @@ public class DroolsConfig implements EnvironmentAware, ApplicationContextAware {
 
         kieBuilder = getKieServices().newKieBuilder(kieFileSystem());
         kieBuilder.buildAll();
-        init = true;
+        if (kieBuilder.getResults().hasMessages(Message.Level.ERROR)) {
+            throw new RuntimeException("Build Errors:\n" + kieBuilder.getResults().toString());
+        }
 
         return getKieServices().newKieContainer(kieRepository.getDefaultReleaseId());
-    }
-
-    @Bean
-    @ConditionalOnMissingBean(KieBase.class)
-    public KieBase kieBase() throws Exception {
-        return kieContainer().getKieBase();
-    }
-
-
-    @Bean
-    @ConditionalOnMissingBean(KieSession.class)
-    public KieSession kieSession() throws Exception {
-        return kieContainer().newKieSession();
-    }
-
-    @Bean
-    @ConditionalOnMissingBean(KModuleBeanFactoryPostProcessor.class)
-    public KModuleBeanFactoryPostProcessor kiePostProcessor() {
-        return new KModuleBeanFactoryPostProcessor();
     }
 
     private void loadRulesFromZK(KieFileSystem kieFileSystem) throws Exception {
@@ -153,8 +134,8 @@ public class DroolsConfig implements EnvironmentAware, ApplicationContextAware {
                 default:
                     break;
             }
-            if (update && init) {
-                kieBuilder.buildAll();
+            if (update) {
+                KieUtils.setKieContainer(kieContainer());
             }
         };
     }
@@ -167,6 +148,11 @@ public class DroolsConfig implements EnvironmentAware, ApplicationContextAware {
     @Override
     public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
         this.applicationContext = applicationContext;
+    }
+
+    @Override
+    public void afterPropertiesSet() throws Exception {
+        KieUtils.setKieContainer(kieContainer());
     }
 
 }
