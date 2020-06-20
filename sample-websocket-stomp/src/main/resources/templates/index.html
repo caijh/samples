@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Stock Ticker</title>
+    <script src="js/sockjs.min.js"></script>
+    <script src="js/stomp.min.js"></script>
+    <script src="js/jquery-3.5.1.js"></script>
+    <script>
+        let stomp = Stomp.over(new SockJS("/ws"));
+
+        function displayStockPrice(frame) {
+            let prices = JSON.parse(frame.body);
+            console.log(prices);
+            $('#price').empty();
+            for (let i in prices) {
+                let price = prices[i];
+                $('#price').append(
+                    $('<tr>').append(
+                        $('<td>').html(price.code),
+                        $('<td>').html(price.price.toFixed(2)),
+                        $('<td>').html(price.dateFormatted)
+                    )
+                );
+            }
+        }
+
+        let connectCallback = function () {
+            stomp.subscribe('/topic/price', displayStockPrice);
+        };
+        let errorCallback = function (error) {
+            alert(error.headers.message);
+        };
+        stomp.connect("guest", "guest", connectCallback, errorCallback);
+        $(document).ready(function () {
+            $('.addStockButton').click(function (e) {
+                e.preventDefault();
+                let data = JSON.stringify({
+                    'code': $('.addStock.code').val(),
+                    'price': Number($('.addStock .price').val())
+                });
+                stomp.send("/app/addStock", {}, data);
+                return false;
+            });
+        });
+    </script>
+</head>
+<body>
+<h1><b>Stock Ticker</b></h1>
+<table border="1">
+    <thead>
+    <tr>
+        <th>Code</th>
+        <th>Price</th>
+        <th>Time</th>
+    </tr>
+    </thead>
+    <tbody id="price"></tbody>
+</table>
+<p class="addStock">
+        Code: <input class="code"/><br/>
+        Price: <input class="price"/><br/>
+    <button class="addStockButton">Add Stock</button>
+</p>
+</body>
+</html>
