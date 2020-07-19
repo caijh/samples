@@ -10,9 +10,15 @@ import java.nio.channels.SocketChannel;
 import java.nio.charset.StandardCharsets;
 import java.util.Iterator;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 public class NioServer {
 
+    private static final Logger LOG = LoggerFactory.getLogger(NioServer.class);
+
     private Selector selector;
+
 
     public static void main(String[] args) throws IOException {
         NioServer server = new NioServer();
@@ -21,11 +27,12 @@ public class NioServer {
     }
 
     private void init(int port) throws IOException {
-        ServerSocketChannel serverSocketChannel = ServerSocketChannel.open();
-        serverSocketChannel.configureBlocking(false);
-        serverSocketChannel.socket().bind(new InetSocketAddress(port));
-        this.selector = Selector.open();
-        serverSocketChannel.register(this.selector, SelectionKey.OP_ACCEPT);
+        try (ServerSocketChannel serverSocketChannel = ServerSocketChannel.open()) {
+            serverSocketChannel.configureBlocking(false);
+            serverSocketChannel.socket().bind(new InetSocketAddress(port));
+            this.selector = Selector.open();
+            serverSocketChannel.register(this.selector, SelectionKey.OP_ACCEPT);
+        }
     }
 
     private void listen() throws IOException {
@@ -60,7 +67,7 @@ public class NioServer {
         channel.configureBlocking(false);
 
         // 在这里可以给客户端发送信息哦
-        System.out.println("新的客户端连接");
+        LOG.info("新的客户端连接");
         // 在和客户端连接成功之后，为了可以接收到客户端的信息，需要给通道设置读的权限。
         channel.register(this.selector, SelectionKey.OP_READ);
     }
@@ -70,9 +77,9 @@ public class NioServer {
         ByteBuffer byteBuffer = ByteBuffer.allocate(1024);
         int read = channel.read(byteBuffer);
         if (read > 0) {
-            System.out.println("收到客户端消息：" + new String(byteBuffer.array(), StandardCharsets.UTF_8));
+            LOG.info("收到客户端消息：{}", new String(byteBuffer.array(), StandardCharsets.UTF_8));
         } else {
-            System.out.println("客户端关闭");
+            LOG.info("客户端关闭");
             key.cancel();
         }
     }

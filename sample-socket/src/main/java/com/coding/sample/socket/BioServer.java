@@ -8,22 +8,28 @@ import java.net.Socket;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+
 public class BioServer {
 
+    private static final Logger LOGGER = LoggerFactory.getLogger(BioServer.class);
+
     public static void main(String[] args) throws Exception {
-        ServerSocket server = new ServerSocket(8080);
-        ExecutorService executorService = Executors.newCachedThreadPool();
-        System.out.println("服务器启动");
-        while (true) {
-            Socket socket = server.accept();
-            System.out.println("客户端:" + socket.getInetAddress().getLocalHost() + "已连接到服务器");
-            executorService.execute(() -> {
-                try {
-                    handle(socket);
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            });
+        try (ServerSocket server = new ServerSocket(8080)) {
+            ExecutorService executorService = Executors.newCachedThreadPool();
+            LOGGER.info("服务器启动");
+            do {
+                Socket socket = server.accept();
+                executorService.execute(() -> {
+                    try {
+                        handle(socket);
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                });
+            } while (true);
         }
     }
 
@@ -34,10 +40,10 @@ public class BioServer {
                 if ("q".equals(line)) {
                     break;
                 }
-                System.out.println("客户端消息：" + line);
+                LOGGER.info("客户端消息 {}", line);
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            throw new IOException();
         }
     }
 

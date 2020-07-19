@@ -9,12 +9,12 @@ import java.nio.charset.StandardCharsets;
 public class NioClient {
 
     public static void main(String[] args) throws IOException {
-        SocketChannel socketChannel = SocketChannel.open();
-        socketChannel.connect(new InetSocketAddress("127.0.0.1", 8080));
-        ByteBuffer byteBuffer = ByteBuffer.allocate(1024);
-        byteBuffer.put("hello".getBytes(StandardCharsets.UTF_8));
-        socketChannel.write(byteBuffer);
-        socketChannel.close();
+        try (SocketChannel socketChannel = SocketChannel.open()) {
+            socketChannel.connect(new InetSocketAddress("127.0.0.1", 8080));
+            ByteBuffer byteBuffer = ByteBuffer.allocate(1024);
+            byteBuffer.put("hello".getBytes(StandardCharsets.UTF_8));
+            socketChannel.write(byteBuffer);
+        }
     }
 
 }

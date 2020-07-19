@@ -21,7 +21,6 @@ public class BioClient {
                 if ("q".equals(data)) {
                     break;
                 }
-                System.out.println(data);
                 bufferedWriter.write(data);
                 bufferedWriter.flush();
             }
