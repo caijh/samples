@@ -1,0 +1,9 @@
+spring:
+  application:
+    name: sample-es
+  elasticsearch:
+    rest:
+      uris: ${ES_HOST:http://127.0.0.1}:${ES_PORT:9200}
+      username: elastic
+      password: ${PASSWORD}
+
